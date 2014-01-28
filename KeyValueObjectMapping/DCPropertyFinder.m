@@ -34,6 +34,7 @@
         key = mapper.attributeName;
     }
     
+    /*
     NSString *propertyDetails = [self findPropertyDetailsForKey:key onClass:cls];
     if(!propertyDetails){
         key = [self.keyParser splitKeyAndMakeCamelcased:key];
@@ -57,7 +58,30 @@
                                                                             onClass:cls
                                                                       attributeName:key];
     }
+    */
+    
+    // ****************
+    // Using new method findInstanceVariableDetailsForKey:onClass: to get Class attributes
+    // ****************
+    NSString *ivarDetails = [self findInstanceVariableDetailsForKey:key onClass:cls];
+    if(!ivarDetails)
+        return nil;
 
+    DCDynamicAttribute *dynamicAttribute;
+    if (mapper && mapper.converter) {
+        dynamicAttribute = [[DCDynamicAttribute alloc] initWithAttributeDescription:ivarDetails
+                                                                             forKey:originalKey
+                                                                            onClass:cls
+                                                                      attributeName:key
+                                                                          converter:mapper.converter];
+    }
+    else {
+        dynamicAttribute = [[DCDynamicAttribute alloc] initWithAttributeDescription:ivarDetails
+                                                                             forKey:originalKey
+                                                                            onClass:cls
+                                                                      attributeName:key];
+    }
+    
     return dynamicAttribute;
 }
 
@@ -79,6 +103,15 @@
     objc_property_t property = class_getProperty(class, [key UTF8String]);
     if (property) {
         NSString *attributeDetails = [NSString stringWithUTF8String:property_getAttributes(property)];
+        return attributeDetails;
+    }
+    return nil;
+}
+
+- (NSString *) findInstanceVariableDetailsForKey: (NSString *)key onClass: (Class)class{
+    Ivar ivar = class_getInstanceVariable(class, [key UTF8String]);
+    if (ivar) {
+        NSString *attributeDetails = [NSString stringWithFormat:@"%@, %@", [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)], [NSString stringWithUTF8String:ivar_getName(ivar)]];
         return attributeDetails;
     }
     return nil;
