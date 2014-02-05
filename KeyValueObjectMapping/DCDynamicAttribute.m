@@ -74,17 +74,25 @@
 }
 - (NSString *) findTypeInformation: (NSString *) typeInformation {
     NSString *attrituteClass = nil;
-    
-    BOOL isType = [[typeInformation substringToIndex:1] isEqualToString:@"T"];
-    BOOL isAnObject = [[typeInformation substringWithRange:NSMakeRange(1, 1)] isEqualToString:@"@"];
-    if(isType && !isAnObject){
-        _primitive = YES;
-        attrituteClass = [typeInformation substringWithRange:NSMakeRange(1, 1)];
-    }else if ([typeInformation length] == 2) {
-        _idType = YES;
+    if ([typeInformation length] > 1) {
+        BOOL isType = [[typeInformation substringToIndex:1] isEqualToString:@"T"];
+        BOOL isAnObject = [[typeInformation substringWithRange:NSMakeRange(1, 1)] isEqualToString:@"@"];
+        if(isType && !isAnObject){
+            _primitive = YES;
+            attrituteClass = [typeInformation substringWithRange:NSMakeRange(1, 1)];
+        }else if ([typeInformation length] == 2) {
+            _idType = YES;
+        } else {
+            _validObject = YES;
+            //attrituteClass = [typeInformation substringWithRange:NSMakeRange(3, [typeInformation length] - 4)];
+            attrituteClass = [typeInformation substringWithRange:NSMakeRange(2, [typeInformation length] - 3)];
+        }
+        if ([attrituteClass isEqualToString:@"<JavaUtilList>"]) {
+            attrituteClass = @"NSArray";
+        }
     } else {
-        _validObject = YES;
-        attrituteClass = [typeInformation substringWithRange:NSMakeRange(3, [typeInformation length] - 4)];
+        _primitive = YES;
+        attrituteClass = typeInformation;
     }
     return attrituteClass;
 }
