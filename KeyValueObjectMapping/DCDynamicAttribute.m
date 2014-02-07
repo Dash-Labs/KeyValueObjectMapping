@@ -90,6 +90,9 @@
         if ([attrituteClass isEqualToString:@"<JavaUtilList>"]) {
             attrituteClass = @"NSArray";
         }
+        if ([attrituteClass isEqualToString:@"<JavaUtilMap>"]) {
+            attrituteClass = @"NSDictionary";
+        }
     } else {
         _primitive = YES;
         attrituteClass = typeInformation;
