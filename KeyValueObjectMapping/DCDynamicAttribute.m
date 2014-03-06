@@ -93,6 +93,9 @@
         if ([attrituteClass isEqualToString:@"<JavaUtilMap>"]) {
             attrituteClass = @"NSDictionary";
         }
+        if ([attrituteClass isEqualToString:@"<ComDashlabsDashModelRollupRollup>"]) {
+            attrituteClass = @"ComDashlabsDashModelRollupAbstractRollup";
+        }
     } else {
         _primitive = YES;
         attrituteClass = typeInformation;
